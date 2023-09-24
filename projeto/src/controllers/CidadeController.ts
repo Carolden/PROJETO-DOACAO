@@ -4,24 +4,27 @@ import { Cidade } from "../models/Cidade";
 
 export class CidadeController {
 
-  async criar (nome: string) {
-    let cidade: Cidade = new Cidade();
-
-    cidade.nome = nome;
-    await cidade.save();
+  async criar (nome: string): Promise<Cidade> {
+    return await Cidade.create({
+      nome,
+    }).save();
   }
 
-  async listar () {
-    let cidade: Cidade[] = await Cidade.find();
-    return cidade;
+  async listar(): Promise<Cidade[]> {
+    const cidadeRepository = Cidade;
+    return await cidadeRepository
+      .createQueryBuilder('cidade')
+      .where('usuario.situacao != :situacao', { situacao: 'I' })
+      .getMany();
   }
 
-  async editar (id: number, nome: string) {
+  async editar (id: number, nome: string): Promise<Cidade | null> {
     let cidade: Cidade | null = await Cidade.findOneBy({ id: id });
     if (cidade) {
       cidade.nome = nome;
-      cidade.save();
+      await cidade.save();
     }
+    return cidade;
   }
 
   async buscar (id: number) {

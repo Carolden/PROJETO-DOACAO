@@ -7,6 +7,9 @@ import { CategoriaController } from './controllers/CategoriaController';
 import { Categoria } from './models/Categoria';
 import { CdController } from './controllers/CdController';
 import { CD } from './models/CD';
+import { Item } from './models/Item';
+import { CidadeController } from './controllers/CidadeController';
+import { Cidade } from './models/Cidade';
 
 var prompt = require('prompt-sync')();
 
@@ -19,6 +22,8 @@ async function main(): Promise<void> {
   let itemController: ItemController = new ItemController(); 
   let categoriaController: CategoriaController = new CategoriaController();
   let cdController: CdController = new CdController();
+  let cidadeController: CidadeController = new CidadeController();
+
 
 
   let input: string | null = '';
@@ -41,6 +46,10 @@ async function main(): Promise<void> {
     console.log('14 - Listar item');
     console.log('15 - Editar item');
     console.log('16 - Deletar item');
+    console.log('17 - Cadastrar cidade');
+    console.log('18 - Listar cidade');
+    console.log('19 - Editar cidade');
+    console.log('20 - Deletar cidade');
 
 
 
@@ -166,15 +175,72 @@ async function main(): Promise<void> {
       
       case '14':
         let listaItem = await itemController.listar();
-        console.table(listaItem);   
+        for (let i = 0; i < listaItem.length; i++) {
+          console.log(listaItem[i].id + ' | ' + listaItem[i].nome.toString() + ' | ' + listaItem[i].situacao + ' | ' + listaItem[i].categoria.id.toString() + ' | ' + listaItem[i].movimentacao);
+        }        
         break;
 
+      case '15': //ERRO AO EDITAR
+        let listaItemEdit = await itemController.listar();
+        console.table(listaItemEdit); 
+        let idListaItem: number = Number(prompt('Qual o ID? '));
+        let buscarItem: Item | null = await itemController.buscar(idListaItem);
+        if (buscarItem) {
+          let nomeItem = prompt(`Nome (${buscarItem.nome}): `, buscarItem.nome);
+          let situacaoItem = prompt(`Situação (${buscarItem.situacao}): `, buscarItem.situacao);
+          let categoriaItem = prompt(`Categoria (${buscarItem.categoria}): `, buscarItem.categoria);
+          let movimentacaoItem = prompt(`Movimentação(${buscarItem.movimentacao}): `, buscarItem.movimentacao);
+          buscarItem = await itemController.editar(buscarItem, nomeItem, situacaoItem, categoriaItem, movimentacaoItem);
+          console.log(`Item ID #${buscarItem.id} atualizado com sucesso!`);
+          } else {
+            console.log('Item não encontrado!');
+          }   
+          break;
+      
+      case '16': // NÃO ESTÁ MUDANDO A SITUAÇÃO PARA "I"
+        let listaItemDelete = await itemController.listar();
+        console.table(listaItemDelete); 
+        let itemDeletar: number = Number(prompt('Qual o ID? '));
+        if (itemDeletar) {
+          await cdController.deletar(itemDeletar);
+          console.log(`Cliente ID #${itemDeletar} excluído com sucesso!`);
+        } else {
+          console.log('Cliente não encontrado!');
+        }
+        break;
 
-
-
-
-
-
+      case '17':
+        let nomeCidade: string = prompt('Qual é o nome da cidade? ');
+        await cidadeController.criar(nomeCidade);
+        break;
+      case '18':
+        let cidade = await cidadeController.listar();
+        console.table(cidade);   
+        break;
+      case '19':
+        let listaCidadeEdit = await cidadeController.listar();
+        console.table(listaCidadeEdit); 
+        let idCidade: number = Number(prompt('Qual o ID? '));
+        let buscarCidade: Cidade | null = await cidadeController.buscar(idCidade);
+        if (buscarCidade) {
+          let nomeCidade = prompt(`Nome (${buscarCidade.nome}): `, buscarCidade.nome);
+          buscarCidade = await cidadeController.editar(idCidade, nomeCidade);
+          console.log(`Cidade ID #${buscarCidade?.id} atualizado com sucesso!`);
+          } else {
+            console.log('Cidade não encontrada!');
+          }       
+        break;
+      case '20':    //ERRO AO DELETAR
+      let listaCidadeDelete = await cidadeController.listar();
+      console.table(listaCidadeDelete); 
+      let cidadeDeletar: number = Number(prompt('Qual o ID? '));
+      if (cidadeDeletar) {
+        await cidadeController.deletar(cidadeDeletar);
+        console.log(`Cidade ID #${cidadeDeletar} excluída com sucesso!`);
+      } else {
+        console.log('Cidade não encontrada!');
+      }
+      break;
 
         }
     prompt('Pressione enter para continuar');

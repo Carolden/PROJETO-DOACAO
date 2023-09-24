@@ -2,6 +2,7 @@ import { Item } from "../models/Item";
 import { Categoria } from "../models/Categoria";
 import { CD } from "../models/CD";
 import { CategoriaController } from "./CategoriaController";
+import { Movimentacao } from "../models/Movimentacao";
 
 let categoriaController: CategoriaController = new CategoriaController();
 
@@ -9,6 +10,7 @@ let categoriaController: CategoriaController = new CategoriaController();
 
 export class ItemController {
 
+  
   async criar (nome: string, idCategoria: number) {
     let item: Item = new Item();
 
@@ -17,14 +19,10 @@ export class ItemController {
     if (cat) {
       item.categoria = cat;
     }
-    return await Item.create({
-      nome: nome,
-      categoria_id: idCategoria,
-    }).save();
-  } 
+    await item.save();
+  }
 
-
-  /*
+  
   async listar () {
     let itens: Item[] = await Item.find({
       relations: {
@@ -33,24 +31,17 @@ export class ItemController {
     });
     return itens;
   }
-  */
+  
 
-  async listar(): Promise<Item[]> {
-    const itemRepository = Item;
-    return await itemRepository
-      .createQueryBuilder('item')
-      .where('item.situacao != :situacao', { situacao: 'I' })
-      .getMany();
-  }
+  async editar (item: Item, nome: string, situacao: string, categoria: Categoria, movimentacao: Movimentacao): Promise<Item> {
+    item.nome = nome;
+    item.situacao = situacao;
+    item.categoria = categoria;
+    item.situacao = situacao;
+    item.movimentacao = movimentacao,
+    await item.save();
 
-
-
-  async editar (id: number, itemAtualizado: Item) {
-    let item: Item | null = await Item.findOneBy({ id: id });
-    if (item) {
-      item = itemAtualizado;
-      item.save();
-    }
+    return item;
   }
 
   async buscar (id: number) {

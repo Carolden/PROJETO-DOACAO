@@ -15,7 +15,6 @@ export class Item extends BaseEntity {
    public situacao: string;
 
    @ManyToOne(() => Categoria, (categoria) => categoria.itens)
-   @JoinColumn({ name: 'categoria_id' })
    public categoria: Categoria;
 
    @ManyToOne(() => Movimentacao, (movimentacao) => movimentacao.itens)
@@ -23,6 +22,5 @@ export class Item extends BaseEntity {
 
    @ManyToMany(() => CD)
    @JoinTable()
-   cd: CD;
-   
+   cd: CD[]
 }
