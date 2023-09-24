@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "typeorm": "^0.3.17"
+  },
+  "devDependencies": {
+    "@types/node": "^20.6.3"
+  }
+}

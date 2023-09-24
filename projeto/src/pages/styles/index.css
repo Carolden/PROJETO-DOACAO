@@ -1,0 +1,11 @@
+
+.row {
+    width: 100%;
+    
+}
+
+.column {
+    display: flex;
+    width: 33,33%;
+}
+
