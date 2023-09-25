@@ -14,19 +14,19 @@ export class UsuarioController {
     }
   }
 
-  async criar (nome: string, email: string, senha: string, situacao: string): Promise<Usuario> {
+  async criar (nome: string, email: string, senhaInserida: string): Promise<Usuario> {
+    let senha: string = this.criptografar(senhaInserida);
     return await Usuario.create({
       nome,
       email,
       senha,
-      situacao,
     }).save();
   }
 
   async editar (usuario: Usuario, nome: string, email: string, senha: string, situacao: string): Promise<Usuario> {
     usuario.nome = nome;
     usuario.email = email;
-    usuario.senha = senha;
+    usuario.senha = this.criptografar(senha);
     usuario.situacao = situacao;
     await usuario.save();
 

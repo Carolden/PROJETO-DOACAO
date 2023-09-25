@@ -10,7 +10,7 @@ let categoriaController: CategoriaController = new CategoriaController();
 
 export class ItemController {
 
-  
+
   async criar (nome: string, idCategoria: number) {
     let item: Item = new Item();
 
@@ -22,7 +22,7 @@ export class ItemController {
     await item.save();
   }
 
-  
+
   async listar () {
     let itens: Item[] = await Item.find({
       relations: {
@@ -31,14 +31,20 @@ export class ItemController {
     });
     return itens;
   }
-  
 
-  async editar (item: Item, nome: string, situacao: string, categoria: Categoria, movimentacao: Movimentacao): Promise<Item> {
+
+  async editar (item: Item, nome: string, situacao: string, idCategoria: string): Promise<Item> {
     item.nome = nome;
     item.situacao = situacao;
-    item.categoria = categoria;
+    let id: number;
+    if (idCategoria != '') {
+      id = Number(idCategoria);
+      let cat: Categoria | null = await Categoria.findOneBy({id:id});
+      if (cat) {
+        item.categoria = cat;
+      }
+    }
     item.situacao = situacao;
-    item.movimentacao = movimentacao,
     await item.save();
 
     return item;

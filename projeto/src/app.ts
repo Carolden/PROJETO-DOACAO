@@ -17,9 +17,9 @@ var prompt = require('prompt-sync')();
 
 async function main(): Promise<void> {
   await DB.initialize();
-  
+
   let usuario: UsuarioController = new UsuarioController();
-  let itemController: ItemController = new ItemController(); 
+  let itemController: ItemController = new ItemController();
   let categoriaController: CategoriaController = new CategoriaController();
   let cdController: CdController = new CdController();
   let cidadeController: CidadeController = new CidadeController();
@@ -54,7 +54,7 @@ async function main(): Promise<void> {
 
 
     console.log('0 - Sair');
-    
+
     input = prompt('Selecione a opção desejada: ');
 
     switch (input) {
@@ -62,17 +62,16 @@ async function main(): Promise<void> {
         let nome = prompt("Digite seu nome: ")
         let email = prompt('Digite seu email: ')
         let senha = prompt('Digite sua senha: ')
-        let situacao = prompt('Digite a situacao: ')
 
-        await usuario.criar(nome, email, senha, situacao);
+        await usuario.criar(nome, email, senha);
         break;
       case '2':
         let user = await usuario.listar();
-        console.table(user);   
+        console.table(user);
         break;
       case '3':
         let listaUserEdit = await usuario.listar();
-        console.table(listaUserEdit); 
+        console.table(listaUserEdit);
         let id: number = Number(prompt('Qual o ID? '));
         let buscarUsuario: Usuario | null = await usuario.buscar(id);
         if (buscarUsuario) {
@@ -84,7 +83,7 @@ async function main(): Promise<void> {
           console.log(`Cliente ID #${buscarUsuario.id} atualizado com sucesso!`);
           } else {
             console.log('Cliente não encontrado!');
-          }       
+          }
         break;
       case '4':
         let listaUserDelete = await usuario.listar();
@@ -99,15 +98,15 @@ async function main(): Promise<void> {
         break;
       case '5':
         let categoria = prompt("Digite o nome da categoria: ")
-        await categoriaController.criar(categoria);        
+        await categoriaController.criar(categoria);
         break;
       case '6':
         let cat = await categoriaController.listar();
-        console.table(cat);   
+        console.table(cat);
         break;
       case '7':
         let listaCat = await categoriaController.listar();
-        console.table(listaCat); 
+        console.table(listaCat);
         let idCat: number = Number(prompt('Qual o ID? '));
         let buscarCat: Categoria | null = await categoriaController.buscar(idCat);
         if (buscarCat) {
@@ -117,11 +116,11 @@ async function main(): Promise<void> {
           console.log(`Categoria ID #${buscarCat.id} atualizado com sucesso!`);
           } else {
             console.log('Categoria não encontrada!');
-          } 
+          }
         break;
       case '8':
         let listaCatDelete = await categoriaController.listar();
-        console.table(listaCatDelete); 
+        console.table(listaCatDelete);
         let catDeletar: number = Number(prompt('Qual o ID? '));
         if (catDeletar) {
           await categoriaController.deletar(catDeletar);
@@ -136,11 +135,11 @@ async function main(): Promise<void> {
         break;
       case '10':
         let cdListar = await cdController.listar();
-        console.table(cdListar);   
+        console.table(cdListar);
         break;
       case '11':
         let listaCd = await cdController.listar();
-        console.table(listaCd); 
+        console.table(listaCd);
         let idCd: number = Number(prompt('Qual o ID? '));
         let buscarCd: CD | null = await cdController.buscar(idCd);
         if (buscarCd) {
@@ -150,11 +149,11 @@ async function main(): Promise<void> {
           console.log(`Categoria ID #${buscarCd.id} atualizado com sucesso!`);
           } else {
             console.log('Categoria não encontrada!');
-          } 
+          }
         break;
       case '12':
         let listaCdDelete = await cdController.listar();
-        console.table(listaCdDelete); 
+        console.table(listaCdDelete);
         let cdDeletar: number = Number(prompt('Qual o ID? '));
         if (cdDeletar) {
           await cdController.deletar(cdDeletar);
@@ -166,44 +165,46 @@ async function main(): Promise<void> {
       case '13':
         let nomeItem = prompt("Digite o nome do item: ");
         let listaCatRelaciona = await categoriaController.listar();
-        console.table(listaCatRelaciona); 
+        console.table(listaCatRelaciona);
         let idCategoriaItem: number = Number(prompt("Digite o id da categoria do item: "));
 
 
         await itemController.criar(nomeItem, idCategoriaItem);
-        break;    
-      
+        break;
+
       case '14':
         let listaItem = await itemController.listar();
         for (let i = 0; i < listaItem.length; i++) {
           console.log(listaItem[i].id + ' | ' + listaItem[i].nome.toString() + ' | ' + listaItem[i].situacao + ' | ' + listaItem[i].categoria.id.toString() + ' | ' + listaItem[i].movimentacao);
-        }        
+        }
         break;
 
-      case '15': //ERRO AO EDITAR
+      case '15':
         let listaItemEdit = await itemController.listar();
-        console.table(listaItemEdit); 
+        console.table(listaItemEdit);
         let idListaItem: number = Number(prompt('Qual o ID? '));
         let buscarItem: Item | null = await itemController.buscar(idListaItem);
         if (buscarItem) {
           let nomeItem = prompt(`Nome (${buscarItem.nome}): `, buscarItem.nome);
           let situacaoItem = prompt(`Situação (${buscarItem.situacao}): `, buscarItem.situacao);
-          let categoriaItem = prompt(`Categoria (${buscarItem.categoria}): `, buscarItem.categoria);
-          let movimentacaoItem = prompt(`Movimentação(${buscarItem.movimentacao}): `, buscarItem.movimentacao);
-          buscarItem = await itemController.editar(buscarItem, nomeItem, situacaoItem, categoriaItem, movimentacaoItem);
+          let idCategoria = prompt(`Categoria - informe o id: `);
+
+          buscarItem = await itemController.editar(buscarItem, nomeItem, situacaoItem, idCategoria);
+
           console.log(`Item ID #${buscarItem.id} atualizado com sucesso!`);
           } else {
             console.log('Item não encontrado!');
-          }   
+          }
           break;
-      
-      case '16': // NÃO ESTÁ MUDANDO A SITUAÇÃO PARA "I"
+
+      case '16':
         let listaItemDelete = await itemController.listar();
-        console.table(listaItemDelete); 
-        let itemDeletar: number = Number(prompt('Qual o ID? '));
-        if (itemDeletar) {
-          await cdController.deletar(itemDeletar);
-          console.log(`Cliente ID #${itemDeletar} excluído com sucesso!`);
+        console.table(listaItemDelete);
+        let idItem: number = Number(prompt('Qual o ID? '));
+
+        if (idItem) {
+          await itemController.deletar(idItem);
+          console.log(`Cliente ID #${idItem} excluído com sucesso!`);
         } else {
           console.log('Cliente não encontrado!');
         }
@@ -215,11 +216,11 @@ async function main(): Promise<void> {
         break;
       case '18':
         let cidade = await cidadeController.listar();
-        console.table(cidade);   
+        console.table(cidade);
         break;
       case '19':
         let listaCidadeEdit = await cidadeController.listar();
-        console.table(listaCidadeEdit); 
+        console.table(listaCidadeEdit);
         let idCidade: number = Number(prompt('Qual o ID? '));
         let buscarCidade: Cidade | null = await cidadeController.buscar(idCidade);
         if (buscarCidade) {
@@ -228,11 +229,11 @@ async function main(): Promise<void> {
           console.log(`Cidade ID #${buscarCidade?.id} atualizado com sucesso!`);
           } else {
             console.log('Cidade não encontrada!');
-          }       
+          }
         break;
-      case '20':    //ERRO AO DELETAR
+      case '20':
       let listaCidadeDelete = await cidadeController.listar();
-      console.table(listaCidadeDelete); 
+      console.table(listaCidadeDelete);
       let cidadeDeletar: number = Number(prompt('Qual o ID? '));
       if (cidadeDeletar) {
         await cidadeController.deletar(cidadeDeletar);

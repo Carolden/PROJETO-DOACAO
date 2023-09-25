@@ -14,7 +14,7 @@ export class CidadeController {
     const cidadeRepository = Cidade;
     return await cidadeRepository
       .createQueryBuilder('cidade')
-      .where('usuario.situacao != :situacao', { situacao: 'I' })
+      .where('cidade.situacao != :situacao', { situacao: 'I' })
       .getMany();
   }
 
