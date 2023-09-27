@@ -1,43 +1,62 @@
 import { Item } from "../models/Item";
 import { Categoria } from "../models/Categoria";
+import { Request, Response } from "express";
+
 
 export class CategoriaController {
-  async criar (nome: string) {
-    let categoria: Categoria = new Categoria();
-    categoria.nome = nome;
-    await categoria.save();
+
+  async criar (req: Request, res: Response): Promise<Response> {
+    let body = req.body;
+
+    let categoria: Categoria = await Categoria.create({
+      nome: body.nome,
+    }).save();
+
+    return res.status(200).json(categoria);
   }
 
-  async listar () {
-    const categoriaRepository = Categoria;
-    return await categoriaRepository
-      .createQueryBuilder('categoria')
-      .where('categoria.situacao != :situacao', { situacao: 'I' })
-      .getMany();
-  }
+  async listar (req: Request, res: Response): Promise<Response> {
+    let categoria: Categoria[] = await Categoria.find();
 
-  async editar (categoria: Categoria, nome: string, situacao: string): Promise<Categoria> {
-    categoria.nome = nome;
-    categoria.situacao = situacao;
-    await categoria.save();
-    return categoria;
-  }
+    return res.status(200).json(categoria);
+  };
 
-  async buscar (id: number) {
-    let categoria: Categoria | null = await Categoria.findOneBy({ id: id });
-    return categoria;
-  }
+  async atualizar (req: Request, res: Response): Promise<Response> {
+    let body = req.body;
+    let id = Number(req.params.id);
 
-  async deletar(id: number) {
-    let result = await Categoria
-      .createQueryBuilder()
-      .update(Categoria)
-      .set({ situacao: "I" })
-      .where({ id: id })
-      .execute();
-    if (result.affected && result.affected > 0) {
-      return true;
+    let categoria: Categoria|null = await Categoria.findOneBy({ id });
+    if (! categoria) {
+      return res.status(422).json({ error: 'Categoria não encontrada!' });
     }
-    return false;
+
+    categoria.nome = body.nome;
+    await categoria.save();
+
+    return res.status(200).json(categoria);
+  }
+
+  async buscar (req: Request, res: Response): Promise<Response> {
+    let id = Number(req.params.id);
+
+    let categoria: Categoria|null = await Categoria.findOneBy({ id });
+    if (! categoria) {
+      return res.status(422).json({ error: 'Categoria não encontrada!' });
+    }
+
+    return res.status(200).json(categoria);
+  }
+
+  async deletar (req: Request, res: Response): Promise<Response> {
+    let id = Number(req.params.id);
+
+    let categoria: Categoria|null = await Categoria.findOneBy({ id });
+    if (! categoria) {
+      return res.status(422).json({ error: 'Categoria não encontrada!' });
+    }
+
+    categoria.remove();
+
+    return res.status(200).json();
   }
 }

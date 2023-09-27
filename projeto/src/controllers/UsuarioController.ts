@@ -1,5 +1,7 @@
 import { getRepository } from 'typeorm';
 import { Usuario } from '../models/Usuario';
+import { Request, Response } from "express";
+
 
 export class UsuarioController {
 
@@ -14,49 +16,65 @@ export class UsuarioController {
     }
   }
 
-  async criar (nome: string, email: string, senhaInserida: string): Promise<Usuario> {
-    let senha: string = this.criptografar(senhaInserida);
-    return await Usuario.create({
-      nome,
-      email,
-      senha,
+  async criar (req: Request, res: Response): Promise<Response> {
+    let body = req.body;
+
+    let usuario: Usuario = await Usuario.create({
+      nome: body.nome,
+      email: body.email,
+      senha: body.senha,
+      situacao: body.situacao,
     }).save();
+
+    return res.status(200).json(usuario);
   }
 
-  async editar (usuario: Usuario, nome: string, email: string, senha: string, situacao: string): Promise<Usuario> {
-    usuario.nome = nome;
-    usuario.email = email;
-    usuario.senha = this.criptografar(senha);
-    usuario.situacao = situacao;
+  async atualizar (req: Request, res: Response): Promise<Response> {
+    let body = req.body;
+    let id = Number(req.params.id);
+
+    let usuario: Usuario|null = await Usuario.findOneBy({ id });
+    if (! usuario) {
+      return res.status(422).json({ error: 'Usuario não encontrado!' });
+    }
+
+    usuario.nome = body.nome;
+    usuario.email = body.email;
+    usuario.senha = body.senha;
+    usuario.situacao = body.situacao;
     await usuario.save();
 
-    return usuario;
+    return res.status(200).json(usuario);
   }
 
-  async listar(): Promise<Usuario[]> {
-    const usuarioRepository = Usuario;
-    return await usuarioRepository
-      .createQueryBuilder('usuario')
-      .where('usuario.situacao != :situacao', { situacao: 'I' })
-      .getMany();
-  }
+  async listar (req: Request, res: Response): Promise<Response> {
+    let users: Usuario[] = await Usuario.find();
 
-  async buscar(id: number) {
-    let usuario: Usuario | null = await Usuario.findOneBy({ id: id });
-    return usuario;
-  }
+    return res.status(200).json(users);
+  };
 
-  async deletar(id: number) {
-    let result = await Usuario
-      .createQueryBuilder()
-      .update(Usuario)
-      .set({ situacao: "I" })
-      .where({ id: id })
-      .execute();
-    if (result.affected && result.affected > 0) {
-      return true;
+  async buscar (req: Request, res: Response): Promise<Response> {
+    let id = Number(req.params.id);
+
+    let usuario: Usuario|null = await Usuario.findOneBy({ id });
+    if (! usuario) {
+      return res.status(422).json({ error: 'Usuario não encontrado!' });
     }
-    return false;
+
+    return res.status(200).json(usuario);
+  }
+
+  async deletar (req: Request, res: Response): Promise<Response> {
+    let id = Number(req.params.id);
+
+    let usuario: Usuario|null = await Usuario.findOneBy({ id });
+    if (! usuario) {
+      return res.status(422).json({ error: 'Usuario não encontrado!' });
+    }
+
+    usuario.remove();
+
+    return res.status(200).json();
   }
 
   criptografar(senha: string) {

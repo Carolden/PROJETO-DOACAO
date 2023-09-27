@@ -1,20 +1,22 @@
-// import express, { Express } from 'express';
-// import cors from 'cors';
+import express, { Express } from 'express';
+import cors from 'cors';
+import usuariosRoutes from "./routes/usuarios";
 
 
 
-// let server: Express = express();
 
-// server.use(cors());
-// server.use(express.json());
+let server: Express = express();
 
-// // server.use(usuariosRoutes);
-// // server.use(produtosRoutes);
+server.use(cors());
+server.use(express.json());
 
-// export default {
-//   start () {
-//     server.listen(3000, () => {
-//       console.log('Server started on port 3000!');
-//     });
-//   }
-// };
+server.use(usuariosRoutes);
+// server.use(produtosRoutes);
+
+export default {
+  start () {
+    server.listen(3000, () => {
+      console.log('Server started on port 3000!');
+    });
+  }
+};

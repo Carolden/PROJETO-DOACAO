@@ -1,18 +1,18 @@
-// import { Router } from "express";
-// import { UsuariosController } from "../controllers/UsuariosController";
+import { Router } from "express";
+import { UsuarioController } from "../controllers/UsuarioController";
 
-// let router: Router = Router();
+let router: Router = Router();
 
-// let usuariosController: UsuariosController = new UsuariosController();
+let usuarioController: UsuarioController = new UsuarioController();
 
-// router.get('/usuarios', usuariosController.list);
+router.get('/usuarios', usuarioController.listar);
 
-// router.get('/usuarios/:id', usuariosController.find);
+router.get('/usuarios/:id', usuarioController.buscar);
 
-// router.post('/usuarios', usuariosController.create);
+router.post('/usuarios', usuarioController.criar);
 
-// router.put('/usuarios/:id', usuariosController.update);
+router.put('/usuarios/:id', usuarioController.atualizar);
 
-// router.delete('/usuarios/:id', usuariosController.delete);
+router.delete('/usuarios/:id', usuarioController.deletar);
 
-// export default router;
+export default router;
