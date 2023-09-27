@@ -1,46 +1,66 @@
+import { Response, Request } from "express";
 import { Beneficiario } from "../models/Beneficiario";
 import { Cidade } from "../models/Cidade";
 
 export class BeneficiarioController {
 
-  async criar (nome: string, idCidade: number) {
-    let beneficiario: Beneficiario = new Beneficiario();
+    async criar (req: Request, res: Response): Promise<Response> {
+      let body = req.body;
+      let beneficiario: Beneficiario = new Beneficiario();
 
-    beneficiario.nome = nome;
-    let cidade: Cidade | null = await Cidade.findOneBy({id:idCidade});
-    if (cidade) {
-      beneficiario.cidade = cidade;
+      beneficiario.nome = body.nome;
+      let cidade: Cidade | null = await Cidade.findOneBy({id: body.idCidade});
+      if (cidade) {
+        beneficiario.cidade = cidade;
+      } else {
+        return res.status(422).json({ error: 'Cidade não encontrada!' });
+      }
+      await beneficiario.save();
+      return res.status(200).json(beneficiario);
     }
-    await beneficiario.save();
-  }
 
-  async listar () {
-    let itens: Beneficiario[] = await Beneficiario.find({
+  async listar (req: Request, res: Response): Promise<Response> {
+    let beneficiarios: Beneficiario[] = await Beneficiario.find({
       relations: {
         cidade: true,
       }
     });
-    return itens;
+    return res.status(200).json(beneficiarios);
   }
 
-  async editar (id: number, nome: string, idCidade: number) {
+  async buscar (req: Request, res: Response): Promise<Response> {
+    let id = Number(req.params.id);
     let beneficiario: Beneficiario | null = await Beneficiario.findOneBy({ id: id });
-    if (beneficiario) {
-      beneficiario.nome = nome;
-      let cidade: Cidade | null = await Cidade.findOneBy({ id: idCidade });
-      if (cidade) {
-        beneficiario.cidade = cidade;
-      }
-      beneficiario.save();
+    if (! beneficiario) {
+      return res.status(422).json({ error: 'Beneficiário não encontrado!' });
     }
+    return res.status(200).json(beneficiario);
   }
 
-  async buscar (id: number) {
+  async editar (req: Request, res: Response): Promise<Response> {
+    let body = req.body;
+    let id = Number(req.params.id);
+    let idCidade = Number(body.idCidade)
     let beneficiario: Beneficiario | null = await Beneficiario.findOneBy({ id: id });
-    return beneficiario;
+
+    if (! beneficiario) {
+      return res.status(422).json({ error: 'Beneficiário não encontrado!' });
+    }
+
+    beneficiario.nome = body.nome;
+    let cidade: Cidade | null = await Cidade.findOneBy({ id: idCidade });
+    if (cidade) {
+      beneficiario.cidade = cidade;
+    } else {
+      return res.status(422).json({ error: 'Cidade não encontrada!' });
+    }
+    beneficiario.save();
+    return res.status(200).json(beneficiario);
   }
 
-  async deletar(id: number) {
+    async deletar (req: Request, res: Response): Promise<Response> {
+    let id = Number(req.params.id);
+
     let result = await Beneficiario
       .createQueryBuilder()
       .update(Beneficiario)
@@ -48,8 +68,8 @@ export class BeneficiarioController {
       .where({ id: id })
       .execute();
     if (result.affected && result.affected > 0) {
-      return true;
+      return res.status(200).json();
     }
-    return false;
+    return res.status(422).json({ error: 'Beneficiário não encontrado!' });
   }
 }

@@ -1,9 +1,11 @@
 import express, { Express } from 'express';
 import cors from 'cors';
 import usuariosRoutes from "./routes/usuarios";
-
-
-
+import categoriasRoutes from './routes/categorias';
+import beneficiariosRoutes from './routes/beneficiarios';
+import cdsRoutes from './routes/cds';
+import cidadesRoutes from './routes/cidades';
+import itensRoutes from './routes/itens';
 
 let server: Express = express();
 
@@ -11,7 +13,11 @@ server.use(cors());
 server.use(express.json());
 
 server.use(usuariosRoutes);
-// server.use(produtosRoutes);
+server.use(categoriasRoutes);
+server.use(beneficiariosRoutes);
+server.use(cdsRoutes);
+server.use(cidadesRoutes);
+server.use(itensRoutes);
 
 export default {
   start () {

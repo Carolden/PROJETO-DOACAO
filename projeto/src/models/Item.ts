@@ -22,5 +22,5 @@ export class Item extends BaseEntity {
 
    @ManyToMany(() => CD)
    @JoinTable()
-   cd: CD[]
+   public cd: CD[]
 }
