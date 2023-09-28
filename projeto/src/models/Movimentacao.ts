@@ -19,7 +19,7 @@ export class Movimentacao extends BaseEntity {
    @Column()
    public quantidade: number;
 
-   @Column()
+   @Column({nullable: true})
    public doador: string;
 
    @Column({type: "char", default: 'A'})

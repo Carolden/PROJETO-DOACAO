@@ -5,6 +5,8 @@ let router: Router = Router();
 
 let usuarioController: UsuarioController = new UsuarioController();
 
+router.post('/usuarios/login', usuarioController.logar);
+
 router.get('/usuarios', usuarioController.listar);
 
 router.get('/usuarios/:id', usuarioController.buscar);

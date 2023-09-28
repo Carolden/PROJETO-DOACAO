@@ -5,14 +5,16 @@ import { Request, Response } from "express";
 
 export class UsuarioController {
 
-  async logar(email: string, senha: string): Promise<number | null> {
-    let senhaCriptografada = this.criptografar(senha);
+  async logar (req: Request, res: Response): Promise<Response> {
+    let body = req.body;
+    let senha = body.senha;
+    let email = body.email;
 
-    let usuario: Usuario | null = await Usuario.findOne({ where: { email: email, senha: senhaCriptografada } });
+    let usuario: Usuario | null = await Usuario.findOne({ where: { email: email, senha: senha } });
     if (usuario) {
-      return usuario.id;
+      return res.status(200).json();
     } else {
-      return null;
+      return res.status(422).json({ error: 'Usuario ou senha incorretos!' });
     }
   }
 
