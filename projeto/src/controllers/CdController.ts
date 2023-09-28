@@ -7,7 +7,7 @@ export class CdController {
 
   async criar (req: Request, res: Response): Promise<Response> {
     let body = req.body;
-    let idCidade = body.cidade.id;
+    let idCidade = Number(body.idCidade);
     let cidade: Cidade | null = await Cidade.findOneBy({ id: idCidade });
     if (! cidade){
       return res.status(422).json({ error: 'Cidade não encontrada!' });
@@ -44,8 +44,7 @@ export class CdController {
     if (! cd) {
       return res.status(422).json({ error: 'Centro de distribuição não encontrado!' });
     }
-    let idCidade = body.cidade.id;
-    let cidade: Cidade | null = await Cidade.findOneBy({ id: idCidade });
+    let cidade: Cidade | null = await Cidade.findOneBy({ id: body.idCidade });
     if (! cidade){
       return res.status(422).json({ error: 'Cidade não encontrada!' });
     }

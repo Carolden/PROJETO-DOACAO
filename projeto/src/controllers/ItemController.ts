@@ -1,9 +1,6 @@
 import { Response, Request } from "express";
 import { Item } from "../models/Item";
 import { Categoria } from "../models/Categoria";
-// import { CD } from "../models/CD";
-// import { CategoriaController } from "./CategoriaController";
-// import { Movimentacao } from "../models/Movimentacao";
 
 export class ItemController {
 
@@ -40,7 +37,7 @@ export class ItemController {
     }
     item.nome = body.nome;
     let idCategoria: number = Number(body.idCategoria);
-    let cat: Categoria | null = await Categoria.findOneBy({id:idCategoria});
+    let cat: Categoria | null = await Categoria.findOneBy({ id:idCategoria });
     if (! cat) {
       return res.status(422).json({ error: 'Categoria não encontrada!' });
     }

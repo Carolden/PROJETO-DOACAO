@@ -1,6 +1,6 @@
 import { BaseEntity, Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Beneficiario } from "./Beneficiario";
-import { Item } from "./Item";
+import { CD_Item } from "./CD_Item";
 
 @Entity('movimentacao')
 export class Movimentacao extends BaseEntity {
@@ -13,7 +13,7 @@ export class Movimentacao extends BaseEntity {
    })
    public data: Date;
 
-   @Column()
+   @Column({ type: 'char' })
    public tipo: string;
 
    @Column()
@@ -25,9 +25,9 @@ export class Movimentacao extends BaseEntity {
    @Column({type: "char", default: 'A'})
    public situacao: string;
 
-   @ManyToOne(() => Beneficiario, (beneficiario) => beneficiario.movimentacoes)
+   @ManyToOne(() => Beneficiario, (beneficiario) => beneficiario.movimentacoes, {nullable: true})
    public beneficiario: Beneficiario;
 
-   @OneToMany(() => Item, (item) => item.movimentacao)
-   public itens: Item[];
+   @ManyToOne(() => CD_Item, (cd_item) => cd_item.movimentacoes)
+   public cd_item: CD_Item;
 }

@@ -1,50 +1,86 @@
-import { Item } from "../models/Item";
-import { Categoria } from "../models/Categoria";
-import { Cidade } from "../models/Cidade";
+import { Request, Response } from "express";
 import { Movimentacao } from "../models/Movimentacao";
 import { Beneficiario } from "../models/Beneficiario";
+import { CD_ItemController } from "./CD_ItemController";
+import { CD_Item } from "../models/CD_Item";
 
 export class MovimentacaoController {
 
-  async criar (tipo: string, qtd: number, doador: string, idBeneficiario: number, itens: Item[]) {
+  async criar (req: Request, res: Response): Promise<Response> {
+    let body = req.body;
     let movimentacao: Movimentacao = new Movimentacao();
 
-    movimentacao.tipo = tipo;
-    movimentacao.quantidade = qtd;
-    movimentacao.doador = doador;
-    let beneficiario = await Beneficiario.findOneBy({ id: idBeneficiario });
+    let cd_itemController = new CD_ItemController();
+    movimentacao.tipo = body.tipo;
+    let cd_item: CD_Item | null;
+
+    if (body.tipo = 'E') {
+      cd_item = await cd_itemController.entrada(body.idCd_item, body.qtd);
+    } else if (body.tipo = 'S') {
+      cd_item = await cd_itemController.saida(body.idCd_item, body.qtd);
+    } else {
+      return res.status(422).json({ error: 'Ops, algo deu errado!' });
+    }
+
+    if (! cd_item) {
+      return res.status(422).json({ error: 'Item não encontrado!' });
+    }
+
+    movimentacao.quantidade = body.quantidade;
+    movimentacao.doador = body.doador;
+    movimentacao.cd_item = cd_item;
+    let beneficiario = await Beneficiario.findOneBy({ id: body.idBeneficiario });
     if (beneficiario) {
       movimentacao.beneficiario = beneficiario;
     }
-    movimentacao.itens = itens;
     await movimentacao.save();
+    return res.status(200).json(movimentacao);
   }
 
-  async listar () {
+  async listar (req: Request, res: Response): Promise<Response> {
     let movimentacoes: Movimentacao[] = await Movimentacao.find();
-    return movimentacoes;
+
+    return res.status(200).json(movimentacoes);
   }
 
-  async editar (id: number, tipo: string, qtd: number, doador: string, idBeneficiario: number, itens: Item[]) {
-    let movimentacao: Movimentacao = new Movimentacao();
+  async editar (req: Request, res: Response): Promise<Response> {
+    let body = req.body;
+    let id = Number(req.params.id);
 
-    movimentacao.tipo = tipo;
-    movimentacao.quantidade = qtd;
-    movimentacao.doador = doador;
-    let beneficiario = await Beneficiario.findOneBy({ id: idBeneficiario });
+    let movimentacao: Movimentacao | null = await Movimentacao.findOneBy({ id });
+    if (! movimentacao) {
+      return res.status(422).json({ error: 'Movimentação não encontrada!' });
+    }
+
+    movimentacao.tipo = body.tipo;
+    movimentacao.quantidade = body.quantidade;
+    movimentacao.doador = body.doador;
+    let beneficiario = await Beneficiario.findOneBy({ id: body.idBeneficiario });
     if (beneficiario) {
       movimentacao.beneficiario = beneficiario;
     }
-    movimentacao.itens = itens;
+    let cd_item: CD_Item | null = await CD_Item.findOneBy({ id: body.idCd_item });
+    if (! cd_item) {
+      return res.status(422).json({ error: 'Item não encontrado!' });
+    }
+    movimentacao.cd_item = cd_item;
     await movimentacao.save();
+    return res.status(200).json(movimentacao);
   }
 
-  async buscar (id: number) {
+  async buscar (req: Request, res: Response): Promise<Response> {
+    let id = Number(req.params.id);
+
     let movimentacao: Movimentacao | null = await Movimentacao.findOneBy({ id: id });
-    return movimentacao;
+    if (! movimentacao) {
+      return res.status(422).json({ error: 'Movimentação não encontrada!' });
+    }
+    return res.status(200).json(movimentacao);
   }
 
-  async deletar(id: number) {
+  async deletar (req: Request, res: Response): Promise<Response> {
+    let id = Number(req.params.id);
+
     let result = await Movimentacao
       .createQueryBuilder()
       .update(Movimentacao)
@@ -52,8 +88,8 @@ export class MovimentacaoController {
       .where({ id: id })
       .execute();
     if (result.affected && result.affected > 0) {
-      return true;
+      return res.status(200).json();
     }
-    return false;
+    return res.status(422).json({ error: 'Movimentação não encontrada!' });
   }
 }

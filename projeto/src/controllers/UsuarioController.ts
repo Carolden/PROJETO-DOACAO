@@ -2,6 +2,7 @@ import { getRepository } from 'typeorm';
 import { Usuario } from '../models/Usuario';
 import { Request, Response } from "express";
 
+const crypto = require('crypto');
 
 export class UsuarioController {
 
@@ -9,6 +10,10 @@ export class UsuarioController {
     let body = req.body;
     let senha = body.senha;
     let email = body.email;
+
+    const hashMD5 = crypto.createHash('md5');
+    hashMD5.update(senha);
+    const senhaCriptografada = hashMD5.digest('hex');
 
     let usuario: Usuario | null = await Usuario.findOne({ where: { email: email, senha: senha } });
     if (usuario) {
@@ -21,10 +26,14 @@ export class UsuarioController {
   async criar (req: Request, res: Response): Promise<Response> {
     let body = req.body;
 
+    const hashMD5 = crypto.createHash('md5');
+    hashMD5.update(body.senha);
+    const senhaCriptografada = hashMD5.digest('hex');
+
     let usuario: Usuario = await Usuario.create({
       nome: body.nome,
       email: body.email,
-      senha: body.senha,
+      senha: senhaCriptografada,
       situacao: body.situacao,
     }).save();
 
@@ -77,14 +86,6 @@ export class UsuarioController {
     usuario.remove();
 
     return res.status(200).json();
-  }
-
-  criptografar(senha: string) {
-    const crypto = require('crypto');
-    const hashMD5 = crypto.createHash('md5');
-    hashMD5.update(senha);
-    const senhaCriptografada = hashMD5.digest('hex');
-    return senhaCriptografada;
   }
 
 }

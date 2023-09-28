@@ -4,7 +4,8 @@ import { Cidade } from "../models/Cidade";
 export class CidadeController {
 
   async criar (req: Request, res: Response): Promise<Response> {
-    let nome = req.params.nome;
+    let body = req.body;
+    let nome = body.nome;
     let cidade = await Cidade.create({
       nome,
     }).save();
