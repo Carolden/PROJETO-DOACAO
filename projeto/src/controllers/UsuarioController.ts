@@ -78,14 +78,16 @@ export class UsuarioController {
   async deletar (req: Request, res: Response): Promise<Response> {
     let id = Number(req.params.id);
 
-    let usuario: Usuario|null = await Usuario.findOneBy({ id });
-    if (! usuario) {
-      return res.status(422).json({ error: 'Usuario não encontrado!' });
+    let result = await Usuario
+      .createQueryBuilder()
+      .update(Usuario)
+      .set({ situacao: "I" })
+      .where({ id: id })
+      .execute();
+    if (result.affected && result.affected > 0) {
+      return res.status(200).json();
     }
-
-    usuario.remove();
-
-    return res.status(200).json();
+    return res.status(422).json({ error: 'Usuário não encontrado!' });
   }
 
 }

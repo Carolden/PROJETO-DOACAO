@@ -50,13 +50,15 @@ export class CategoriaController {
   async deletar (req: Request, res: Response): Promise<Response> {
     let id = Number(req.params.id);
 
-    let categoria: Categoria|null = await Categoria.findOneBy({ id });
-    if (! categoria) {
-      return res.status(422).json({ error: 'Categoria não encontrada!' });
+    let result = await Categoria
+      .createQueryBuilder()
+      .update(Categoria)
+      .set({ situacao: "I" })
+      .where({ id: id })
+      .execute();
+    if (result.affected && result.affected > 0) {
+      return res.status(200).json();
     }
-
-    categoria.remove();
-
-    return res.status(200).json();
+    return res.status(422).json({ error: 'Categoria não encontrada!' });
   }
 }
