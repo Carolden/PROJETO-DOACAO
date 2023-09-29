@@ -59,9 +59,13 @@ export class UsuarioController {
   }
 
   async listar (req: Request, res: Response): Promise<Response> {
-    let users: Usuario[] = await Usuario.find();
+    const usuarioRepository = Usuario;
+    let resposta = await usuarioRepository
+      .createQueryBuilder('usuario')
+      .where('usuario.situacao != :situacao', { situacao: 'I' })
+      .getMany();
 
-    return res.status(200).json(users);
+    return res.status(200).json(resposta);
   };
 
   async buscar (req: Request, res: Response): Promise<Response> {

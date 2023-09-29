@@ -11,7 +11,7 @@ router.get('/categorias/:id', categoriaController.buscar);
 
 router.post('/categorias', categoriaController.criar);
 
-router.put('/categorias/:id', categoriaController.atualizar);
+router.put('/categorias/:id', categoriaController.editar);
 
 router.delete('/categorias/:id', categoriaController.deletar);
 
