@@ -6,26 +6,29 @@ import { CD_Item } from "../models/CD_Item";
 
 export class MovimentacaoController {
 
-  async criar (req: Request, res: Response): Promise<Response> {
+  async criar(req: Request, res: Response): Promise<Response> {
     let body = req.body;
     let movimentacao: Movimentacao = new Movimentacao();
-
     let cd_itemController = new CD_ItemController();
-    movimentacao.tipo = body.tipo;
-    let cd_item: CD_Item | null;
+    let cd_item: CD_Item | null = await CD_Item.findOneBy({ itemId: body.itemId, cdId: body.cdId });
 
-    if (body.tipo = 'E') {
-      cd_item = await cd_itemController.entrada(body.idCd_item, body.qtd);
-    } else if (body.tipo = 'S') {
-      cd_item = await cd_itemController.saida(body.idCd_item, body.qtd);
-    } else {
+    if (!cd_item) {
+      cd_item = await cd_itemController.criar(body.idCd, body.idItem, body.quantidade);
+    }
+
+    if (cd_item != null) {
+      if (body.tipo = 'E') {
+        cd_item = await cd_itemController.entrada(cd_item.id, body.qtd);
+      } else if (body.tipo = 'S') {
+        cd_item = await cd_itemController.saida(cd_item.id, body.qtd);
+      }
+    }
+
+    if (!cd_item) {
       return res.status(422).json({ error: 'Ops, algo deu errado!' });
     }
 
-    if (! cd_item) {
-      return res.status(422).json({ error: 'Item não encontrado!' });
-    }
-
+    movimentacao.tipo = body.tipo;
     movimentacao.quantidade = body.quantidade;
     movimentacao.doador = body.doador;
     movimentacao.cd_item = cd_item;
@@ -37,18 +40,18 @@ export class MovimentacaoController {
     return res.status(200).json(movimentacao);
   }
 
-  async listar (req: Request, res: Response): Promise<Response> {
+  async listar(req: Request, res: Response): Promise<Response> {
     let movimentacoes: Movimentacao[] = await Movimentacao.find();
 
     return res.status(200).json(movimentacoes);
   }
 
-  async editar (req: Request, res: Response): Promise<Response> {
+  async editar(req: Request, res: Response): Promise<Response> {
     let body = req.body;
     let id = Number(req.params.id);
 
     let movimentacao: Movimentacao | null = await Movimentacao.findOneBy({ id });
-    if (! movimentacao) {
+    if (!movimentacao) {
       return res.status(422).json({ error: 'Movimentação não encontrada!' });
     }
 
@@ -60,7 +63,7 @@ export class MovimentacaoController {
       movimentacao.beneficiario = beneficiario;
     }
     let cd_item: CD_Item | null = await CD_Item.findOneBy({ id: body.idCd_item });
-    if (! cd_item) {
+    if (!cd_item) {
       return res.status(422).json({ error: 'Item não encontrado!' });
     }
     movimentacao.cd_item = cd_item;
@@ -68,17 +71,17 @@ export class MovimentacaoController {
     return res.status(200).json(movimentacao);
   }
 
-  async buscar (req: Request, res: Response): Promise<Response> {
+  async buscar(req: Request, res: Response): Promise<Response> {
     let id = Number(req.params.id);
 
     let movimentacao: Movimentacao | null = await Movimentacao.findOneBy({ id: id });
-    if (! movimentacao) {
+    if (!movimentacao) {
       return res.status(422).json({ error: 'Movimentação não encontrada!' });
     }
     return res.status(200).json(movimentacao);
   }
 
-  async deletar (req: Request, res: Response): Promise<Response> {
+  async deletar(req: Request, res: Response): Promise<Response> {
     let id = Number(req.params.id);
 
     let result = await Movimentacao

@@ -1,29 +1,28 @@
-import { Request, Response } from "express";
 import { CD } from "../models/CD";
 import { CD_Item } from "../models/CD_Item";
 import { Item } from "../models/Item";
 
 export class CD_ItemController {
 
-  async criar (req: Request, res: Response): Promise<Response> {
-    let body = req.body;
-    let idCd = body.idCd;
-    let idItem = body.idItem;
+  async criar (idCd: number, idItem: number, quantidade: number): Promise<CD_Item | null> {
 
     let cd_item = new CD_Item();
     let cd: CD | null = await CD.findOneBy({ id: idCd });
     if (! cd) {
-      return res.status(422).json({ error: 'CD não encontrado!' });
+      return null;
     }
     let item: Item | null = await Item.findOneBy({ id: idItem });
     if (! item) {
-      return res.status(422).json({ error: 'Item não encontrado!' });
+      return null;
     }
+
     cd_item.cd = cd;
     cd_item.item = item;
-    cd_item.quantidade = body.quantidade;
+    cd_item.quantidade = quantidade;
+
     await cd_item.save();
-    return res.status(200).json(cd_item);
+
+    return cd_item;
   }
 
   async entrada (IdCd_item: number, quantidade: number): Promise<CD_Item | null> {

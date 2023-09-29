@@ -14,6 +14,12 @@ export class CD_Item extends BaseEntity {
    @ManyToOne(() => Item, (item) => item.cd_item)
    public item: Item;
 
+   @Column()
+   public itemId: number;
+
+   @Column()
+   public cdId: number;
+
    @OneToMany(() => Movimentacao, (movimentacao) => movimentacao.cd_item)
    public movimentacoes: Movimentacao[];
 

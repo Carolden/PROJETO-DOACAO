@@ -7,7 +7,6 @@ import cdsRoutes from './routes/cds';
 import cidadesRoutes from './routes/cidades';
 import itensRoutes from './routes/itens';
 import movimentacoesRoutes from './routes/movimentacoes';
-import cd_itensRoutes from './routes/cd_itens';
 
 let server: Express = express();
 
@@ -21,7 +20,6 @@ server.use(cdsRoutes);
 server.use(cidadesRoutes);
 server.use(itensRoutes);
 server.use(movimentacoesRoutes);
-server.use(cd_itensRoutes);
 
 export default {
   start () {
