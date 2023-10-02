@@ -4,7 +4,7 @@ const id = urlParams.get('id');
 let inputNome = document.getElementById('input-nome');
 let inputEmail = document.getElementById('input-email');
 let inputSenha = document.getElementById('input-senha');
-let formulario = document.getElementById('input-formulario');
+let formulario = document.getElementById('formulario');
 
 async function buscarDados () {
   let resposta = await fetch('http://localhost:3000/usuarios/' + id);
@@ -12,11 +12,11 @@ async function buscarDados () {
     let usuario = await resposta.json();
     inputNome.value = usuario.nome;
     inputEmail.value = usuario.email;
-    inputSenha.value = usuario.senha;
   } else if (resposta.status === 422) {
     let e = await resposta.json();
     alert(e.error);
   } else {
+    console.log(resposta.json());
     alert('Ops, algo deu errado');
   }
 }
@@ -53,6 +53,7 @@ formulario.addEventListener('submit', async (event) => {
   });
 
   if (resposta.ok) {
+    await alert('Usuário atualizado com sucesso!');
     window.location.href = 'usuario.html';
   } else {
     alert('Ops, algo deu errado!');

@@ -3,6 +3,7 @@ import { Usuario } from '../models/Usuario';
 import { Request, Response } from "express";
 
 const crypto = require('crypto');
+const hashMD5 = crypto.createHash('md5');
 
 export class UsuarioController {
 
@@ -11,11 +12,10 @@ export class UsuarioController {
     let senha = body.senha;
     let email = body.email;
 
-    const hashMD5 = crypto.createHash('md5');
     hashMD5.update(senha);
     const senhaCriptografada = hashMD5.digest('hex');
 
-    let usuario: Usuario | null = await Usuario.findOne({ where: { email: email, senha: senha } });
+    let usuario: Usuario | null = await Usuario.findOne({ where: { email: email, senha: senhaCriptografada } });
     if (usuario) {
       return res.status(200).json();
     } else {
@@ -26,7 +26,6 @@ export class UsuarioController {
   async criar (req: Request, res: Response): Promise<Response> {
     let body = req.body;
 
-    const hashMD5 = crypto.createHash('md5');
     hashMD5.update(body.senha);
     const senhaCriptografada = hashMD5.digest('hex');
 
@@ -49,9 +48,12 @@ export class UsuarioController {
       return res.status(422).json({ error: 'Usuario não encontrado!' });
     }
 
+    hashMD5.update(body.senha);
+    const senhaCriptografada = hashMD5.digest('hex');
+
     usuario.nome = body.nome;
     usuario.email = body.email;
-    usuario.senha = body.senha;
+    usuario.senha = senhaCriptografada;
     usuario.situacao = body.situacao;
     await usuario.save();
 
