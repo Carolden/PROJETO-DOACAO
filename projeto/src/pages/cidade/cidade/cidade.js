@@ -2,7 +2,13 @@ const urlParams = new URLSearchParams(window.location.search);
 const id = urlParams.get('id');
 
 let listaCds = document.getElementById('lista-cds');
-let listaBeneficiarios = document.getElementById('lista-beneficioarios');
+let listaBeneficiarios = document.getElementById('lista-beneficiarios');
+
+let formularioCd = document.getElementById('form-cd');
+let inputCd = document.getElementById('input-cd');
+
+let formularioBeneficiario = document.getElementById('form-beneficiario');
+let inputBeneficiario = document.getElementById('input-beneficiario');
 
 async function buscarDados () {
   let resposta = await fetch('http://localhost:3000/cidades/' + id);
@@ -15,8 +21,8 @@ async function buscarDados () {
       listaCds.innerHTML += `<li class="list-group-item">${cd.nome}</li>`;
     }
 
-    for (pessoa of beneficiarios) {
-      listaBeneficiarios.innerHTML = `<li class="list-group-item">${pessoa.nome}</li>`;
+    for (beneficiario of beneficiarios) {
+      listaBeneficiarios.innerHTML += `<li class="list-group-item">${beneficiario.nome}</li>`;
     }
 
   } else if (resposta.status === 422) {
@@ -33,38 +39,54 @@ if (id) {
   buscarDados();
 }
 
+formularioCd.addEventListener('submit', async (event) => {
+  event.stopPropagation();
+  event.preventDefault();
 
+  let payload = {
+    nome: inputCd.value,
+    idCidade: id,
+  }
 
-// formulario.addEventListener('submit', async (event) => {
-//   event.stopPropagation();
-//   event.preventDefault();
+  let resposta = await fetch('http://localhost:3000/cds', {
+    method: 'POST',
+    headers: {
+      'Content-type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
 
-//   let payload = {
-//     nome: inputNome.value,
-//     email: inputEmail.value,
-//     senha: inputSenha.value,
-//   }
+  if (resposta.ok) {
+    location.reload();
+  } else {
+    alert('Ops, algo deu errado!');
+  }
 
-//   let url = 'http://localhost:3000/usuarios';
-//   let method = 'POST';
-//   if (id) {
-//     url += '/' + id;
-//     method = 'PUT';
-//   }
+});
 
-//   let resposta = await fetch(url, {
-//     method: method,
-//     headers: {
-//       'Content-type': 'application/json',
-//       'Accept': 'application/json'
-//     },
-//     body: JSON.stringify(payload)
-//   });
+formularioBeneficiario.addEventListener('submit', async (event) => {
+  event.stopPropagation();
+  event.preventDefault();
 
-//   if (resposta.ok) {
-//     await alert('Usuário atualizado com sucesso!');
-//     window.location.href = 'usuario.html';
-//   } else {
-//     alert('Ops, algo deu errado!');
-//   }
-// });
+  let payload = {
+    nome: inputBeneficiario.value,
+    idCidade: id,
+  }
+
+  let resposta = await fetch('http://localhost:3000/beneficiarios', {
+    method: 'POST',
+    headers: {
+      'Content-type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (resposta.ok) {
+    location.reload();
+  } else {
+    alert('Ops, algo deu errado!');
+  }
+
+});
