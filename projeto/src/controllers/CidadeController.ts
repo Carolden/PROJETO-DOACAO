@@ -23,8 +23,14 @@ export class CidadeController {
 
   async buscar (req: Request, res: Response): Promise<Response> {
     let id = Number(req.params.id);
-    let cidade: Cidade | null = await Cidade.findOneBy({ id: id });
-    if (! cidade) {
+    let buscaCidade: Cidade[] | null = await Cidade.find({
+      relations: {
+        cds: true,
+        beneficiarios: true,
+    }, where: { id: id }});
+    let cidade = buscaCidade[0];
+
+    if (! buscaCidade) {
       return res.status(422).json({ error: 'Cidade não encontrada!' });
     }
     return res.status(200).json(cidade);

@@ -1,0 +1,10 @@
+.logomarca {
+  width: 200px;
+  border-radius: 10px;
+}
+
+.menu {
+  margin-top: 100px;
+  display: flex;
+  justify-content: space-between;
+}

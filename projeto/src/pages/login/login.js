@@ -21,7 +21,7 @@ async function logar (email, senha) {
   });
 
   if (resposta.ok) {
-    window.location.href = '../index/index.html';
+    window.location.href = '../home/home.html';
   } else if (resposta.status === 422) {
     let e = await resposta.json();
     alert(e.error);
