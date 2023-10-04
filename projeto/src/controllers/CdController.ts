@@ -31,8 +31,15 @@ export class CdController {
 
   async buscar (req: Request, res: Response): Promise<Response> {
     let id = Number(req.params.id);
-    let cd: CD | null = await CD.findOneBy({ id: id });
-    if (! cd) {
+
+    let buscaCd: CD[] | null = await CD.find({
+      relations: {
+        cidade: true,
+        cd_item: true,
+    }, where: { id: id }});
+    let cd = buscaCd[0];
+
+    if (! buscaCd) {
       return res.status(422).json({ error: 'Centro de distribuição não encontrado!' });
     }
     return res.status(200).json(cd);

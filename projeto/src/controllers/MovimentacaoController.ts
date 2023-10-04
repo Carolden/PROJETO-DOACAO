@@ -10,6 +10,7 @@ export class MovimentacaoController {
     let body = req.body;
     let movimentacao: Movimentacao = new Movimentacao();
     let cd_itemController = new CD_ItemController();
+
     let cd_item: CD_Item | null = await CD_Item.findOneBy({ itemId: body.itemId, cdId: body.cdId });
 
     if (!cd_item) {
@@ -17,9 +18,9 @@ export class MovimentacaoController {
     }
 
     if (cd_item != null) {
-      if (body.tipo = 'E') {
+      if (body.tipo == 'E') {
         cd_item = await cd_itemController.entrada(cd_item.id, body.qtd);
-      } else if (body.tipo = 'S') {
+      } else if (body.tipo == 'S') {
         cd_item = await cd_itemController.saida(cd_item.id, body.qtd);
       }
     }
@@ -41,7 +42,10 @@ export class MovimentacaoController {
   }
 
   async listar(req: Request, res: Response): Promise<Response> {
-    let movimentacoes: Movimentacao[] = await Movimentacao.find();
+    let movimentacoes: Movimentacao[] = await Movimentacao.find({relations: {
+      cd_item: true,
+      beneficiario: true,
+    }});
 
     return res.status(200).json(movimentacoes);
   }

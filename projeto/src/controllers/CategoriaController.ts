@@ -25,7 +25,9 @@ export class CategoriaController {
 
   async editar (req: Request, res: Response): Promise<Response> {
     let body = req.body;
-    let categoria: Categoria | null = await Categoria.findOneBy({ id: body.id });
+    let id = Number(req.params.id);
+
+    let categoria: Categoria | null = await Categoria.findOneBy({ id: id });
     if (! categoria) {
       return res.status(422).json({ error: 'Categoria não encontrada!' });
     }

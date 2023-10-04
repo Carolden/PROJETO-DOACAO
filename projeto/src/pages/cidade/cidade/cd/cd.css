@@ -1,0 +1,51 @@
+.logomarca {
+  width: 200px;
+  border-radius: 10px;
+}
+
+.cd {
+  margin-top: 50px;
+  margin-left: 20px;
+}
+
+.container-lista {
+  border: 1px solid rgba(128, 128, 128, 0.526);
+  border-radius: 10px;
+  margin-top: 20px;
+  padding: 10px;
+}
+
+.container-lista-movimentacao {
+  border: 1px solid rgba(128, 128, 128, 0.526);
+  border-radius: 10px;
+  margin-top: 20px;
+  padding: 10px;
+}
+
+.container-movimentacoes {
+  margin-top: 20px;
+  display: flex;
+}
+
+.btn {
+  margin-top: 20px;
+  margin-left: 20px;
+}
+
+.adicionar {
+  margin-top: 10px;
+  width: 50%;
+}
+
+.form-movimentacao {
+  display: flex;
+  align-items: baseline;
+}
+
+#input-nome {
+  width: 200px;
+}
+
+.form-movimentacao select {
+  width: 100px;
+}
