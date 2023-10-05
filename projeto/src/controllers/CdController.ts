@@ -30,13 +30,13 @@ export class CdController {
   }
 
   async buscar (req: Request, res: Response): Promise<Response> {
-    let id = Number(req.params.id);
+    let id = req.params.id;
 
     let buscaCd: CD[] | null = await CD.find({
       relations: {
         cidade: true,
         cd_item: true,
-    }, where: { id: id }});
+    }, where: { id: Number(id) }});
     let cd = buscaCd[0];
 
     if (! buscaCd) {

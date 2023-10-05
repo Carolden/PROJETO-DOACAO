@@ -32,6 +32,7 @@ export class CD_ItemController {
       return null;
     }
     cd_item.quantidade += Number(quantidade);
+
     await cd_item.save();
     return cd_item;
   }

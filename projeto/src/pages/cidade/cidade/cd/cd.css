@@ -49,3 +49,7 @@
 .form-movimentacao select {
   width: 100px;
 }
+
+#select-beneficiario {
+  width: 200px;
+}

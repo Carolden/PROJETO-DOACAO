@@ -26,7 +26,7 @@
     <div class="container-lista">
       <h3 class="titulo">Movimentações:</h3>
 
-      <div class="container-movimentacoes">
+      <!-- <div class="container-movimentacoes"> -->
 
         <div class="container container-lista-movimentacao">
           <h4 class="titulo">Recebimentos:</h4>
@@ -49,18 +49,12 @@
           </div>
 
           <form id="formulario-entrada" class="form-movimentacao">
-            <input class="form-control" id="input-nome" type="text" placeholder="Doador" aria-label="default input example">
-            <select class="form-select" aria-label="Default select example">
+            <input class="form-control" id="input-nome-doador" type="text" placeholder="Doador" aria-label="default input example">
+            <select id="select-item-entrada" class="form-select" aria-label="Default select example">
               <option selected disabled>Item</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
             </select>
-            <select class="form-select" aria-label="Default select example">
+            <select id="select-quantidade-entrada" class="form-select" aria-label="Default select example">
               <option selected disabled>Qtd.</option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option>
             </select>
             <button type="submit" class="btn btn-primary">Salvar</button>
 
@@ -76,7 +70,7 @@
               <thead>
                 <tr>
                   <th scope="col">#</th>
-                  <th scope="col">Doador</th>
+                  <th scope="col">Beneficiário</th>
                   <th scope="col">Item</th>
                   <th scope="col">Quantidade</th>
                 </tr>
@@ -86,13 +80,27 @@
               </tbody>
             </table>
           </div>
+          <form id="formulario-saida" class="form-movimentacao">
+            <select id="select-beneficiario" class="form-select" aria-label="Default select example">
+              <option selected disabled>Beneficiário</option>
+            </select>
+            <select id="select-item-saida" class="form-select" aria-label="Default select example">
+              <option selected disabled>Item</option>
+            </select>
+            <select id="select-quantidade-saida" class="form-select" aria-label="Default select example">
+              <option selected disabled>Qtd.</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Salvar</button>
+
+          </form>
+
         </div>
-      </div>
+      <!-- </div> -->
 
 
     </div>
 
-    <div class="container-lista">
+    <!-- <div class="container-lista">
       <h3>Itens:</h3>
       <ul id="lista-itens" class="list-group list-group-flush">
       </ul>
@@ -102,7 +110,7 @@
           <button type="submit" class="input-group-text" id="inputGroup-sizing-default">Adicionar</button>
         </form>
       </div>
-    </div>
+    </div> -->
 
     <a class="btn btn-outline-primary" href="../lista.html" role="button">Voltar</a>
     <a class="btn btn-outline-warning" href="../cidade.html" role="button">Editar</a>

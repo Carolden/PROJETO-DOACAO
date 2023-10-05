@@ -17,8 +17,11 @@ async function buscarDados () {
     let cds = cidade.cds;
     let beneficiarios = cidade.beneficiarios;
 
+    let nomeCidade = document.getElementById('nome-cidade');
+    nomeCidade.innerText = cidade.nome;
+
     for (cd of cds) {
-      listaCds.innerHTML += `<a href="cd/cd.html?id=${cidade.id}"><li class="list-group-item">${cd.nome}</li></a>`;
+      listaCds.innerHTML += `<a href="cd/cd.html?id=${cd.id}"><li class="list-group-item">${cd.nome}</li></a>`;
     }
 
     for (beneficiario of beneficiarios) {

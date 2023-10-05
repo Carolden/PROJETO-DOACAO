@@ -11,17 +11,17 @@ export class MovimentacaoController {
     let movimentacao: Movimentacao = new Movimentacao();
     let cd_itemController = new CD_ItemController();
 
-    let cd_item: CD_Item | null = await CD_Item.findOneBy({ itemId: body.itemId, cdId: body.cdId });
+    let cd_item: CD_Item | null = await CD_Item.findOneBy({ itemId: Number(body.itemId), cdId: Number(body.cdId) });
 
     if (!cd_item) {
-      cd_item = await cd_itemController.criar(body.idCd, body.idItem, body.quantidade);
+      cd_item = await cd_itemController.criar(Number(body.cdId), Number(body.itemId), Number(body.quantidade));
     }
 
     if (cd_item != null) {
       if (body.tipo == 'E') {
-        cd_item = await cd_itemController.entrada(cd_item.id, body.qtd);
+        cd_item = await cd_itemController.entrada(cd_item.id, Number(body.quantidade));
       } else if (body.tipo == 'S') {
-        cd_item = await cd_itemController.saida(cd_item.id, body.qtd);
+        cd_item = await cd_itemController.saida(cd_item.id, Number(body.quantidade));
       }
     }
 
@@ -30,12 +30,16 @@ export class MovimentacaoController {
     }
 
     movimentacao.tipo = body.tipo;
-    movimentacao.quantidade = body.quantidade;
-    movimentacao.doador = body.doador;
+    movimentacao.quantidade = Number(body.quantidade);
+    if (movimentacao.tipo == 'E') {
+      movimentacao.doador = body.doador;
+    }
     movimentacao.cd_item = cd_item;
-    let beneficiario = await Beneficiario.findOneBy({ id: body.idBeneficiario });
-    if (beneficiario) {
-      movimentacao.beneficiario = beneficiario;
+    if (movimentacao.tipo == 'S') {
+      let beneficiario = await Beneficiario.findOneBy({ id: Number(body.idBeneficiario) });
+      if (beneficiario != null) {
+        movimentacao.beneficiario = beneficiario;
+      }
     }
     await movimentacao.save();
     return res.status(200).json(movimentacao);

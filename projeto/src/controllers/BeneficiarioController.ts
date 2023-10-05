@@ -49,10 +49,10 @@ export class BeneficiarioController {
 
     beneficiario.nome = body.nome;
     let cidade: Cidade | null = await Cidade.findOneBy({ id: idCidade });
-    if (cidade) {
-      beneficiario.cidade = cidade;
-    } else {
+    if (!cidade) {
       return res.status(422).json({ error: 'Cidade não encontrada!' });
+    } else {
+      beneficiario.cidade = cidade;
     }
     beneficiario.save();
     return res.status(200).json(beneficiario);

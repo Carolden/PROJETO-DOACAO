@@ -20,12 +20,13 @@ export class ItemController {
 
 
   async listar (req: Request, res: Response): Promise<Response> {
-    let itens: Item[] = await Item.find({
+    let itens: Item[] | null = await Item.find({
       relations: {
         categoria: true,
-      }
-    });
+    }, where: { situacao: 'A' }});
     return res.status(200).json(itens);
+
+
   }
 
 
