@@ -38,7 +38,7 @@ export class CidadeController {
 
   async editar (req: Request, res: Response): Promise<Response> {
     let body = req.body;
-    let cidade: Cidade | null = await Cidade.findOneBy({ id: body.id });
+    let cidade: Cidade | null = await Cidade.findOneBy({ id: Number(req.params.id) });
     if (! cidade) {
       return res.status(422).json({ error: 'Cidade não encontrada!' });
     }

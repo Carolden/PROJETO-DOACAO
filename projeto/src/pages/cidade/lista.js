@@ -13,10 +13,29 @@ async function buscarCidades () {
     tdId.innerText = cidade.id;
     tdId.className = 'idCidade';
     tdNome.innerText = cidade.nome;
+    tdNome.className = 'nomeCidade';
     tdAcoes.innerHTML = `<a href="./cidade/cidade.html?id=${cidade.id}" class="btn btn-outline-primary">Listar</a>
-    <a href="./formulario/formulario.html?id=${cidade.id}" class="btn btn-outline-warning">Editar</a>
-    <button type="button" class="btn btn-outline-danger btn-excluir">Excluir</button>`;
-
+    <button type="button" class="btn btn-outline-warning btn-editar" data-bs-toggle="modal" data-bs-target="#exampleModal">Editar</button>
+    <button type="button" class="btn btn-outline-danger btn-excluir">Excluir</button>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Editar cidade</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form id="formulario-edicao-cidade">
+            <div class="modal-body">
+              <input id="editar-cidade" class="form-control" type="text" placeholder="Cidade" aria-label="default input example">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-primary">Salvar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>`;
 
     tr.appendChild(tdId);
     tr.appendChild(tdNome);
@@ -31,8 +50,9 @@ let botoesExcluir = document.getElementsByClassName('btn-excluir');
 buscarCidades();
 
 document.addEventListener('click', async function (event) {
-  console.log('teste');
-  if (event.target.classList.contains('btn-excluir')) {
+  if (event.target.classList.contains('btn-editar')) {
+    editarCidade(event);
+  } else if (event.target.classList.contains('btn-excluir')) {
 
     let idCidade = event.target.closest('tr').querySelector('.idCidade').innerText;
 
@@ -44,7 +64,7 @@ document.addEventListener('click', async function (event) {
 
         if (response.ok) {
           alert('Cidade excluído com sucesso!');
-          event.target.closest('tr').remove();
+          this.location.reload();
         } else {
           alert('Erro ao excluir cidade.');
         }
@@ -55,7 +75,41 @@ document.addEventListener('click', async function (event) {
   }
 });
 
+async function editarCidade (event) {
+  let nomeCidade = event.target.closest('tr').querySelector('.nomeCidade').innerText;
+  let idCidade = event.target.closest('tr').querySelector('.idCidade').innerText;
 
+  let inputEditarCidade = document.getElementById('editar-cidade');
+  inputEditarCidade.value = nomeCidade;
 
+  let editarCidade = document.getElementById('formulario-edicao-cidade');
 
+  editarCidade.addEventListener('submit', async (evt) => {
+    evt.stopPropagation();
+    evt.preventDefault();
 
+    let payload = {
+      nome: inputEditarCidade.value,
+    }
+// teste
+    console.log(idCidade);
+    // let url = 'http://localhost:3000/cidades/' + idCidade;
+    // let method = 'PUT';
+
+    let resposta = await fetch('http://localhost:3000/cidades/' + idCidade, {
+      method: 'PUT',
+      headers: {
+        'Content-type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (resposta.ok) {
+      await alert('Cidade atualizada com sucesso!');
+      this.location.reload();
+    } else {
+      alert('Ops, algo deu errado!');
+    }
+  });
+}

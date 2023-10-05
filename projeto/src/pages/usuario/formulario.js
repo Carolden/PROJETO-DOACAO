@@ -53,7 +53,7 @@ formulario.addEventListener('submit', async (event) => {
   });
 
   if (resposta.ok) {
-    await alert('Usuário atualizado com sucesso!');
+    await alert('Usuário salvo!');
     window.location.href = 'usuario.html';
   } else {
     alert('Ops, algo deu errado!');
