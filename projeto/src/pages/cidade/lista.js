@@ -91,10 +91,6 @@ async function editarCidade (event) {
     let payload = {
       nome: inputEditarCidade.value,
     }
-// teste
-    console.log(idCidade);
-    // let url = 'http://localhost:3000/cidades/' + idCidade;
-    // let method = 'PUT';
 
     let resposta = await fetch('http://localhost:3000/cidades/' + idCidade, {
       method: 'PUT',
@@ -112,4 +108,36 @@ async function editarCidade (event) {
       alert('Ops, algo deu errado!');
     }
   });
+}
+
+criarCidade();
+async function criarCidade () {
+  let formCidade = document.getElementById('form-nova-cidade');
+  let novaCidade = document.getElementById('input-nova-cidade');
+
+  formCidade.addEventListener('submit', async function (event) {
+    event.stopPropagation();
+    event.preventDefault();
+
+    let payload = {
+      nome: novaCidade.value,
+    }
+
+    let resposta = await fetch('http://localhost:3000/cidades', {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (resposta.ok) {
+      await alert('Cidade criada com sucesso!');
+      location.reload();
+    } else {
+      alert('Ops, algo deu errado!');
+    }
+  });
+
 }

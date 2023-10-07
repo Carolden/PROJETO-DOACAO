@@ -6,6 +6,15 @@
 .cd {
   margin-top: 50px;
   margin-left: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.btn-editar {
+  margin-left: 10px;
+  padding: 5px;
+  border-radius: 10px;
+  width: 40px;
 }
 
 .container-lista {

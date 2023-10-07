@@ -160,8 +160,9 @@ async function criarBeneficiario () {
 
     let payload = {
       nome: novoBeneficiario.value,
-      cidade: novaCidade.value,
+      idCidade: novaCidade.value,
     }
+    console.log(payload);
 
     let resposta = await fetch('http://localhost:3000/beneficiarios', {
       method: 'POST',

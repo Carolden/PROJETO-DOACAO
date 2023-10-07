@@ -19,14 +19,13 @@ async function buscarMovimentacoes () {
   let movimentacoes = await resposta.json();
 
   for(let movimentacao of movimentacoes) {
-    if (movimentacao.cd_item.id == id) {
+    if (movimentacao.cd_item.cdId == id) {
       let tr = document.createElement('tr');
       let tdId = document.createElement('td');
       let tdNome = document.createElement('td');
       let tdItem = document.createElement('td');
       let tdQuantidade = document.createElement('td');
       let tdAcoes = document.createElement('td');
-
       tdId.innerText = movimentacao.id;
       tdId.className = 'idMovimentacao';
 
@@ -44,7 +43,7 @@ async function buscarMovimentacoes () {
       tdQuantidade.innerText = movimentacao.quantidade;
 
       tdAcoes.innerHTML = `
-      <a href="./formulario/formulario.html?id=${movimentacao.id}" class="btn btn-outline-warning">Editar</a>
+
       <button type="button" class="btn btn-outline-danger btn-excluir">Excluir</button>`;
 
       tr.appendChild(tdId);
@@ -62,6 +61,8 @@ async function buscarMovimentacoes () {
     }
 }
 
+buscarMovimentacoes();
+
 setarItens();
 
 async function setarItens() {
@@ -70,31 +71,103 @@ async function setarItens() {
   let cd = await resposta.json();
   let cdItem = cd.cd_item;
 
-  for ( cdI of cdItem ) {
+  let nomeCD = document.getElementById('nome-cd');
+  nomeCD.innerText = cd.nome;
+
+  let headerCD = document.getElementById('header-cd');
+  let divEditar = document.createElement('div');
+  divEditar.innerHTML = `
+  <button id="botao-editar" type="button" class="btn-editar" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="15" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+      <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+    </svg>
+  </button>
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Editar CD</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="formulario-edicao-cd">
+        <div class="modal-body">
+          <input id="editar-cd" class="form-control" type="text" placeholder="Centro de distribuição" aria-label="default input example">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar</button>
+        </div>
+      </form>
+      </div>
+    </div>
+  </div>`;
+
+  headerCD.appendChild(divEditar);
+
+  let inputEditarCd = document.getElementById('editar-cd');
+  inputEditarCd.value = nomeCD.innerText;
+
+  let editarCd = document.getElementById('formulario-edicao-cd');
+
+  editarCd.addEventListener('submit', async (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+
+    let payload = {
+      nome: inputEditarCd.value,
+    }
+
+    let resposta = await fetch('http://localhost:3000/cds/' + id, {
+      method: 'PUT',
+      headers: {
+        'Content-type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (resposta.ok) {
+      await alert('Centro de distribuição atualizado com sucesso!');
+      this.location.reload();
+    } else {
+      alert('Ops, algo deu errado!');
+    }
+  });
+
+  let itensResposta = await fetch('http://localhost:3000/itens');
+  let itemEntrada = await itensResposta.json();
+  for (item of itemEntrada) {
     let option = document.createElement("option");
+    option.value = item.id;
+    option.innerText = item.nome;
+    selectItensEntrada.appendChild(option);
+  }
+
+  for ( cdI of cdItem ) {
     let option2 = document.createElement("option");
     let itemResposta = await fetch('http://localhost:3000/itens/' + cdI.itemId);
     let item = await itemResposta.json();
 
-    option.value = cdI.itemId;
-    option.innerText = item.nome;
-
-    option2.value = cdI.itemId;
+    option2.value = cdI.id;
     option2.innerText = item.nome;
 
-    selectItensEntrada.appendChild(option);
     selectItensSaida.appendChild(option2);
-
   }
   let beneficiarioResposta = await fetch('http://localhost:3000/beneficiarios/');
   let beneficiarios = await beneficiarioResposta.json();
+
+  let cdResposta = await fetch('http://localhost:3000/cds/' + id);
+  let centroDistribuicao = await cdResposta.json();
+
   for (beneficiario of beneficiarios) {
-    // if (cdItem.cidade.id == beneficiario.cidade.id) {
+    console.log('cd' + centroDistribuicao.cidade.id);
+    console.log(beneficiario.cidade.id);
+    if (beneficiario.cidade.id == centroDistribuicao.cidade.id) {
       let optionBeneficiario = document.createElement("option");
       optionBeneficiario.value = beneficiario.id;
       optionBeneficiario.innerText = beneficiario.nome;
       selectBeneficiario.appendChild(optionBeneficiario);
-    // }
+    }
   }
 
   selectItensEntrada.addEventListener('change', async (event) => {
@@ -110,7 +183,6 @@ async function setarItens() {
   selectItensSaida.addEventListener('change', async (event) => {
     selectQuantidadeSaida.innerHTML = '';
     for ( cdI of cdItem ) {
-
       if (cdI.id == selectItensSaida.value) {
         for (let i = 0; i < cdI.quantidade; i++) {
           let optionQtd1 = document.createElement("option");
@@ -159,7 +231,6 @@ async function novaSaida () {
       itemId: selectItensSaida.value,
       cdId: id,
     }
-    console.log(payload);
     criarMovimentacao(payload);
   });
 }
@@ -182,7 +253,6 @@ async function criarMovimentacao(payload) {
   }
 }
 
-buscarMovimentacoes();
 
 let botoesExcluir = document.getElementsByClassName('btn-excluir');
 
@@ -209,7 +279,6 @@ document.addEventListener('click', async function (event) {
     }
   }
 });
-
 
 
 

@@ -47,7 +47,8 @@ export class CdController {
 
   async editar (req: Request, res: Response): Promise<Response> {
     let body = req.body;
-    let cd: CD | null = await CD.findOneBy({ id: body.id })
+    let id = Number(req.params.id);
+    let cd: CD | null = await CD.findOneBy({ id: id })
     if (! cd) {
       return res.status(422).json({ error: 'Centro de distribuição não encontrado!' });
     }
